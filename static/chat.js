@@ -145,6 +145,17 @@ const catalogCategory = document.querySelector('#catalog-category');
 const catalogMore = document.querySelector('#catalog-more');
 const catalogSearch = catalogFilters.querySelector('button');
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BRL' });
+const categoryNames = {
+  'Guitarras': 'Electric guitars',
+  'Baixos': 'Basses',
+  'Baterias e Percussão': 'Drums and percussion',
+  'Teclados e Pianos': 'Keyboards and pianos',
+  'Violões': 'Acoustic guitars',
+  'Instrumentos de Sopro (Madeiras)': 'Woodwinds',
+  'Instrumentos de Sopro (Metais)': 'Brass instruments',
+  'Cordas Orquestrais': 'Orchestral strings',
+  'Ukuleles': 'Ukuleles',
+};
 let catalogOffset = 0;
 let catalogLoading = false;
 let catalogParams = new URLSearchParams();
@@ -154,7 +165,7 @@ function productCard(product) {
   card.className = 'product';
   const category = document.createElement('span');
   category.className = 'product-category';
-  category.textContent = product.category;
+  category.textContent = categoryNames[product.category] || product.category;
   const title = document.createElement('h3');
   title.textContent = product.name;
   const price = document.createElement('p');
@@ -208,7 +219,7 @@ async function loadCatalog(append = false) {
       for (const category of data.categories) {
         const option = document.createElement('option');
         option.value = category.name;
-        option.textContent = category.name;
+        option.textContent = categoryNames[category.name] || category.name;
         catalogCategory.append(option);
       }
     }

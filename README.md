@@ -36,6 +36,8 @@ its current price, PIX price, and any active promotion. **Ask about this instrum
 fills a question in the chat; it does not send it automatically. Browsing makes
 no model requests. The assistant can also introduce the categories with stock
 and help narrow the choice through conversation.
+Category labels are displayed in English; filter values retain the original CSV
+names so queries use the supplied data without modifying it.
 
 The header's Theme selector offers System, Light, and Dark. System follows the
 operating system's preference, including changes while the page is open. Explicit
