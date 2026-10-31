@@ -21,6 +21,9 @@ Let me know if you’d like more details or want to explore other options!
 
 Tool calls:
 
+These original arguments were captured before category normalization and retain
+the dataset's category label. They are diagnostic source values, not interface copy.
+
 ```json
 [
   {

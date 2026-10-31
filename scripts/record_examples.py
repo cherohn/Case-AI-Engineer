@@ -15,7 +15,7 @@ from store_agent.agent import Agent
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES = [
-    ("01-budget-search", "Which acoustic guitars are available for up to R$1,000? Show three options with their current prices."),
+    ("01-product-discovery", "I'm new to instruments. What types do you currently have in stock?"),
     ("02-store-information", "What is your store address, and when can I visit during the week and on Saturday?"),
     ("03-product-price", "How much does the Takamine GD20 cost? What is the price with PIX?"),
     ("04-online-return", "I bought a standard, unmodified instrument online and received it three calendar days ago. It is unused, in its original packaging with all manuals and accessories. Can I return it because I changed my mind? Who pays the return shipping?"),

@@ -126,10 +126,15 @@ for questions that combine catalog facts and policies. This is a practical initi
 choice, not the result of a comparison benchmark. The 20B model has the same
 reported account quotas, so switching to it would not increase those quotas.
 
-The prompt asks the agent to answer in the customer's language, consult current
+The prompt asks the agent to answer in English, consult current
 facts even on follow-up questions, cite policy sections, and ask for missing
 information instead of guessing. Accessories and unrelated requests are outside
 the store's scope.
+
+Interface labels, validation messages, tool descriptions, and policy section labels
+are in English. Store/product names and street addresses keep their original
+spelling. The supplied CSVs and PDF remain unchanged; original policy excerpts
+and historical tool arguments can therefore contain Portuguese source text.
 
 ## Free-tier budget
 

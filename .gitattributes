@@ -1,2 +1,4 @@
 # Keep the supplied CSV bytes and recognize their Windows line endings.
 data/*.csv -text whitespace=cr-at-eol
+# Recorded Markdown may contain intentional hard line breaks.
+examples/*.md whitespace=-blank-at-eol
