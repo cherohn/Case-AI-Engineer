@@ -76,7 +76,12 @@ input.addEventListener('keydown', event => {
 form.addEventListener('submit', async event => {
   event.preventDefault();
   const text = input.value.trim();
-  if (!text || waiting) return;
+  if (waiting) return;
+  if (!text || text.length > 1000) {
+    setStatus('Enter a message between 1 and 1,000 characters.', true);
+    input.focus();
+    return;
+  }
   const userMessage = addMessage('user', text);
   input.value = '';
   updateInput();
@@ -237,6 +242,12 @@ document.querySelector('#browse').addEventListener('click', () => {
 document.querySelector('#close-catalog').addEventListener('click', () => catalogDialog.close());
 catalogFilters.addEventListener('submit', event => {
   event.preventDefault();
+  const budget = document.querySelector('#catalog-budget');
+  if (!budget.validity.valid) {
+    catalogStatus.textContent = 'Enter a valid, non-negative budget with at most two decimal places.';
+    budget.focus();
+    return;
+  }
   loadCatalog();
 });
 catalogMore.addEventListener('click', () => loadCatalog(true));

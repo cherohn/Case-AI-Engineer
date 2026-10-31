@@ -38,6 +38,6 @@ class PoliciesTest(unittest.TestCase):
 
     def test_supplied_purchase_facts_unlock_the_policy_without_approving_a_return(self):
         result = self.policies.check_return(purchase_channel="online", days_since_receipt=3)
-        self.assertEqual(result["section"], "4. Política de Trocas e Devoluções")
+        self.assertEqual(result["section"], "4. Exchanges and returns")
         self.assertEqual(result["customer_facts"]["days_since_receipt"], 3)
         self.assertEqual(result["service_boundary"]["available_actions"], [])

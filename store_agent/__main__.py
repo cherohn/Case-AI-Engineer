@@ -38,8 +38,9 @@ def main():
             try:
                 print(agent.reply(text))
             except RateLimitError as error:
-                wait = error.response.headers.get("retry-after", "a little")
-                print(f"Groq rate limit reached. Wait {wait} seconds before trying again.", file=sys.stderr)
+                wait = error.response.headers.get("retry-after")
+                advice = f"Wait {wait} seconds before trying again." if wait else "Please wait before trying again."
+                print("Groq rate limit reached. " + advice, file=sys.stderr)
                 return 1
             except AuthenticationError:
                 print("Groq rejected the API key. Check your local .env.", file=sys.stderr)

@@ -5,7 +5,7 @@ from pypdf import PdfReader
 from store_agent.catalog import DATA_DIR
 
 
-SECTIONS = {
+SOURCE_HEADINGS = {
     "store": "1. Sobre a Empório da Música",
     "hours": "2. Horário de Funcionamento",
     "payments": "3. Formas de Pagamento",
@@ -16,6 +16,18 @@ SECTIONS = {
     "warranty": "8. Garantia",
     "privacy": "9. Privacidade e Proteção de Dados",
     "general": "10. Disposições Finais",
+}
+SECTIONS = {
+    "store": "1. About Empório da Música",
+    "hours": "2. Opening hours",
+    "payments": "3. Payment methods",
+    "returns": "4. Exchanges and returns",
+    "shipping": "5. Shipping and deliveries",
+    "promotions": "6. Promotions and discounts",
+    "service": "7. WhatsApp customer support",
+    "warranty": "8. Warranty",
+    "privacy": "9. Privacy and data protection",
+    "general": "10. General provisions",
 }
 
 
@@ -32,10 +44,10 @@ class Policies:
             pages.append("\n".join(lines))
 
         text = "\n".join(pages)
-        headings = list(SECTIONS.values())
+        headings = list(SOURCE_HEADINGS.values())
         positions = [text.index(heading) for heading in headings]
         self.sections = {}
-        for index, topic in enumerate(SECTIONS):
+        for index, topic in enumerate(SOURCE_HEADINGS):
             end = positions[index + 1] if index + 1 < len(positions) else len(text)
             self.sections[topic] = text[positions[index]:end].strip()
 
