@@ -1,0 +1,15 @@
+{
+  "author": "Matheus Souza Garcez",
+  "title": "Empório da Música — Customer Support Agent",
+  "role": "AI Engineer — Full-Stack Generative AI Applications",
+  "filename": "Matheus Souza Garcez - AI Engineer – Full-Stack para Aplicações com IA Generativa.pdf",
+  "sources": [
+    "README.md",
+    "docs/evaluation.md",
+    "examples/01-product-discovery.md",
+    "examples/02-store-information.md",
+    "examples/03-product-price.md",
+    "examples/04-online-return.md",
+    "examples/05-out-of-scope.md"
+  ]
+}
