@@ -136,3 +136,107 @@ fetch('/api/health')
     if (!data.configured) setStatus('The assistant is not configured yet. Please contact the demo owner.', true);
   })
   .catch(() => setStatus('Could not connect to the assistant. Try refreshing the page.', true));
+
+const catalogDialog = document.querySelector('#catalog');
+const catalogFilters = document.querySelector('#catalog-filters');
+const catalogProducts = document.querySelector('#catalog-products');
+const catalogStatus = document.querySelector('#catalog-status');
+const catalogCategory = document.querySelector('#catalog-category');
+const catalogMore = document.querySelector('#catalog-more');
+const catalogSearch = catalogFilters.querySelector('button');
+const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BRL' });
+let catalogOffset = 0;
+let catalogLoading = false;
+let catalogParams = new URLSearchParams();
+
+function productCard(product) {
+  const card = document.createElement('article');
+  card.className = 'product';
+  const category = document.createElement('span');
+  category.className = 'product-category';
+  category.textContent = product.category;
+  const title = document.createElement('h3');
+  title.textContent = product.name;
+  const price = document.createElement('p');
+  price.className = 'product-price';
+  price.textContent = currency.format(Number(product.price_brl));
+  card.append(category, title, price);
+  if (Number(product.discount_percent) > 0) {
+    const offer = document.createElement('p');
+    offer.className = 'product-offer';
+    offer.textContent = `${product.discount_percent}% off · Was ${currency.format(Number(product.original_price_brl))}`;
+    card.append(offer);
+  }
+  const pix = document.createElement('p');
+  pix.className = 'product-pix';
+  pix.textContent = `${currency.format(Number(product.pix_price_brl))} with PIX · In stock`;
+  const ask = document.createElement('button');
+  ask.type = 'button';
+  ask.className = 'reset';
+  ask.textContent = 'Ask about this instrument';
+  ask.addEventListener('click', () => {
+    if (waiting) return;
+    input.value = `Tell me about the ${product.name}. Is it available, and what are the payment options?`;
+    updateInput();
+    catalogDialog.close();
+    input.focus();
+  });
+  card.append(pix, ask);
+  return card;
+}
+
+async function loadCatalog(append = false) {
+  if (catalogLoading) return;
+  catalogLoading = true;
+  catalogSearch.disabled = true;
+  catalogMore.disabled = true;
+  catalogStatus.textContent = 'Loading instruments…';
+  if (!append) {
+    catalogParams = new URLSearchParams({
+      query: document.querySelector('#catalog-query').value.trim(),
+      category: catalogCategory.value,
+    });
+    const budget = document.querySelector('#catalog-budget').value;
+    if (budget) catalogParams.set('max_price', budget);
+  }
+  catalogParams.set('offset', append ? String(catalogOffset) : '0');
+  try {
+    const response = await fetch(`/api/catalog?${catalogParams}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Please check your filters.');
+    if (catalogCategory.options.length === 1) {
+      for (const category of data.categories) {
+        const option = document.createElement('option');
+        option.value = category.name;
+        option.textContent = category.name;
+        catalogCategory.append(option);
+      }
+    }
+    if (!append) catalogProducts.replaceChildren();
+    data.products.forEach(product => catalogProducts.append(productCard(product)));
+    catalogOffset = (append ? catalogOffset : 0) + data.products.length;
+    catalogMore.hidden = catalogOffset >= data.total_matches;
+    catalogStatus.textContent = data.total_matches
+      ? `Showing ${catalogOffset} of ${data.total_matches} available instruments.`
+      : 'No instruments match these filters. Try another category or a higher budget.';
+  } catch (error) {
+    catalogStatus.textContent = error instanceof TypeError ? 'Could not load the catalog. Please try again.' : error.message;
+    if (!append) catalogProducts.replaceChildren();
+    catalogMore.hidden = true;
+  } finally {
+    catalogLoading = false;
+    catalogSearch.disabled = false;
+    catalogMore.disabled = false;
+  }
+}
+
+document.querySelector('#browse').addEventListener('click', () => {
+  catalogDialog.showModal();
+  loadCatalog();
+});
+document.querySelector('#close-catalog').addEventListener('click', () => catalogDialog.close());
+catalogFilters.addEventListener('submit', event => {
+  event.preventDefault();
+  loadCatalog();
+});
+catalogMore.addEventListener('click', () => loadCatalog(true));

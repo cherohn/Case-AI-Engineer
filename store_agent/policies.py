@@ -42,8 +42,15 @@ class Policies:
     def read_policy(self, topic: str) -> dict:
         if topic not in self.sections:
             raise ValueError("Unknown policy topic. Choose: " + ", ".join(SECTIONS))
-        return {
+        result = {
             "source": "data/store_policies.pdf",
             "section": SECTIONS[topic],
             "text": self.sections[topic],
         }
+        if topic == "returns":
+            result["service_boundary"] = {
+                "next_step": "Contact the store team to confirm the return procedure.",
+                "logistics": "The manual does not specify pickup or shipping-label procedures. These are unverified.",
+                "available_actions": [],
+            }
+        return result

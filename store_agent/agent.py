@@ -21,6 +21,7 @@ class Agent:
         catalog = Catalog()
         policies = Policies()
         self.tools = {
+            "list_categories": catalog.list_categories,
             "search_products": catalog.search_products,
             "get_product": catalog.get_product,
             "read_policy": policies.read_policy,

@@ -10,34 +10,27 @@
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <a class="brand" href="/" aria-label="Empório da Música home">
-        <span class="brand-mark" aria-hidden="true">♪</span>
-        <span>EMPÓRIO<br>DA MÚSICA<span class="brand-caption">YOUR MUSIC STARTS HERE</span></span>
-      </a>
-      <div class="sidebar-copy">
-        <span class="eyebrow">LET'S FIND YOUR SOUND</span>
-        <h1>A little guidance.<br>A lot of music.</h1>
-        <p>Explore instruments, compare options, and get help with the details.</p>
-      </div>
-      <div class="strings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="sidebar-footer">Instruments. Advice. Possibilities.<br><span>Campo Grande · MS</span></div>
-    </aside>
-
     <main>
       <header class="chat-header">
-        <div><span class="eyebrow">CUSTOMER SUPPORT</span><h2>Let's talk music.</h2></div>
-        <button id="reset" class="reset" type="button">New conversation <span aria-hidden="true">↗</span></button>
+        <a class="brand" href="/" aria-label="Empório da Música home">
+          <span class="brand-mark" aria-hidden="true">♪</span>
+          <span>Empório da Música<small>Customer support · Virtual assistant</small></span>
+        </a>
+        <div class="header-actions">
+          <button id="browse" class="browse" type="button">Browse instruments</button>
+          <button id="reset" class="reset" type="button">New conversation</button>
+        </div>
       </header>
 
       <div id="conversation" class="conversation" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions">
         <div id="welcome" class="welcome">
-          <div class="welcome-note" aria-hidden="true">♪</div>
-          <h3>What brings you in?</h3>
-          <p>Looking for your first instrument, your next one,<br>or a hand with our store policies? Ask away.</p>
+          <span class="eyebrow">WELCOME TO EMPÓRIO DA MÚSICA</span>
+          <h1>How can we help?</h1>
+          <p>You don't need a model name. Tell us your budget and what you'd like<br>to play, or browse the instruments we have available.</p>
           <div class="suggestions" aria-label="Suggested questions">
             <button type="button" data-question="What acoustic guitars are available for up to R$1,000?">Find an instrument <span>Acoustic guitars under R$1,000 ↗</span></button>
-            <button type="button" data-question="What payment methods do you accept?">Plan your purchase <span>Payment options ↗</span></button>
+            <button type="button" data-question="What instrument categories do you currently have in stock?">Explore the store <span>What do you have available? ↗</span></button>
+            <button type="button" data-question="What is the store address and what are your opening hours?">Visit the store <span>Address and opening hours ↗</span></button>
             <button type="button" data-question="Can I return an instrument bought online?">A question after buying? <span>Returns and exchanges ↗</span></button>
           </div>
         </div>
@@ -56,5 +49,21 @@
       </div>
     </main>
   </div>
+  <dialog id="catalog" aria-labelledby="catalog-title">
+    <div class="catalog-heading">
+      <div><span class="eyebrow">FIND YOUR NEXT INSTRUMENT</span><h2 id="catalog-title">Available instruments</h2></div>
+      <button id="close-catalog" type="button" aria-label="Close catalog">×</button>
+    </div>
+    <form id="catalog-filters" class="catalog-filters">
+      <label>Model or brand<input id="catalog-query" type="search" placeholder="e.g. Yamaha" maxlength="100"></label>
+      <label>Category<select id="catalog-category"><option value="">All categories</option></select></label>
+      <label>Budget (R$)<input id="catalog-budget" type="number" min="0" step="0.01" placeholder="Any price"></label>
+      <button type="submit" class="browse">Search</button>
+    </form>
+    <p id="catalog-status" class="catalog-status" role="status"></p>
+    <div id="catalog-products" class="catalog-products"></div>
+    <button id="catalog-more" class="reset" type="button" hidden>Load more instruments</button>
+    <p class="catalog-footnote">Browse current offers, then ask the assistant for details. Prices and availability are checked again in the conversation.</p>
+  </dialog>
 </body>
 </html>

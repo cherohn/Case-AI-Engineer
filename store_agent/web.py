@@ -5,13 +5,15 @@ from threading import Lock
 from uuid import UUID, uuid4
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
+from decimal import InvalidOperation
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from groq import APIError, AuthenticationError, Groq, RateLimitError
 from pydantic import BaseModel, Field
 
 from store_agent.agent import Agent
+from store_agent.catalog import Catalog
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,6 +40,7 @@ def create_app(client=None):
     sessions = {}
     busy = Lock()
     model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+    catalog = Catalog()
     app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
     @app.get("/")
@@ -47,6 +50,22 @@ def create_app(client=None):
     @app.get("/api/health")
     def health():
         return {"configured": client is not None}
+
+    @app.get("/api/catalog")
+    def browse_catalog(
+        query: str = Query(default="", max_length=100),
+        category: str = Query(default="", max_length=100),
+        max_price: str | None = Query(default=None, max_length=20),
+        offset: int = Query(default=0, ge=0),
+    ):
+        try:
+            result = catalog.search_products(
+                query=query, category=category, max_price=max_price, offset=offset, limit=12,
+            )
+        except (ValueError, InvalidOperation):
+            raise HTTPException(422, "Enter a valid, non-negative maximum price.") from None
+        result["categories"] = catalog.list_categories()["categories"]
+        return result
 
     @app.post("/api/chat")
     def chat(body: ChatMessage):

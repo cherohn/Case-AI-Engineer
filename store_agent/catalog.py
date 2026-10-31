@@ -66,6 +66,17 @@ class Catalog:
                 return {"product": product, "source": "data/products.csv; data/promotions.csv"}
         return {"product": None, "message": "Product not found in the supplied catalog."}
 
+    def list_categories(self) -> dict:
+        counts = {}
+        for product in self._products():
+            if product["available"]:
+                category = product["category"]
+                counts[category] = counts.get(category, 0) + 1
+        return {
+            "categories": [{"name": name, "available_products": count} for name, count in sorted(counts.items())],
+            "source": "data/products.csv; data/categories.csv",
+        }
+
     def search_products(
         self,
         query: str = "",
@@ -73,10 +84,13 @@ class Catalog:
         max_price: str | None = None,
         available_only: bool = True,
         limit: int = 5,
+        offset: int = 0,
     ) -> dict:
         """Search by name terms and category; the price cap uses the current price before PIX."""
         if not 1 <= limit <= 20:
             raise ValueError("limit must be between 1 and 20")
+        if offset < 0:
+            raise ValueError("offset must be non-negative")
         ceiling = Decimal(str(max_price)) if max_price is not None else None
         if ceiling is not None and (not ceiling.is_finite() or ceiling < 0):
             raise ValueError("max_price must be a finite, non-negative number")
@@ -96,7 +110,7 @@ class Catalog:
 
         matches.sort(key=lambda product: (Decimal(product["price_brl"]), product["name"]))
         return {
-            "products": matches[:limit],
+            "products": matches[offset:offset + limit],
             "total_matches": len(matches),
             "source": "data/products.csv; data/categories.csv; data/promotions.csv",
             "price_filter": "Current price before the payment-specific PIX discount.",

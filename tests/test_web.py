@@ -21,9 +21,22 @@ class WebTest(unittest.TestCase):
     def test_page_and_assets_load_without_calling_the_agent(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Let's talk music.", response.text)
+        self.assertIn("How can we help?", response.text)
         for path in ["/static/chat.js", "/static/style.css", "/api/health"]:
             self.assertEqual(self.client.get(path).status_code, 200)
+        self.agent_class.assert_not_called()
+
+    def test_catalog_can_be_browsed_without_a_model_request(self):
+        result = self.client.get("/api/catalog", params={"category": "Violões", "max_price": "1000"})
+        self.assertEqual(result.status_code, 200)
+        data = result.json()
+        self.assertGreater(data["total_matches"], 0)
+        self.assertTrue(all(p["available"] and float(p["price_brl"]) <= 1000 for p in data["products"]))
+        self.agent_class.assert_not_called()
+
+    def test_catalog_rejects_invalid_budget_and_page(self):
+        for params in [{"max_price": "NaN"}, {"max_price": "-1"}, {"offset": -1}]:
+            self.assertEqual(self.client.get("/api/catalog", params=params).status_code, 422)
         self.agent_class.assert_not_called()
 
     def test_session_reuses_its_agent_and_new_sessions_are_separate(self):

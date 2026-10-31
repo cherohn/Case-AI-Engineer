@@ -12,6 +12,21 @@ class CatalogTest(unittest.TestCase):
     def setUp(self):
         self.catalog = Catalog()
 
+    def test_discovery_lists_only_categories_with_available_products(self):
+        categories = self.catalog.list_categories()["categories"]
+        self.assertEqual(sum(c["available_products"] for c in categories), 61)
+        self.assertIn("Violões", [c["name"] for c in categories])
+        self.assertNotIn("Instrumentos de Sopro (Madeiras)", [c["name"] for c in categories])
+
+    def test_catalog_pages_have_no_duplicates_and_cover_every_available_product(self):
+        first = self.catalog.search_products(limit=20)
+        second = self.catalog.search_products(limit=20, offset=20)
+        third = self.catalog.search_products(limit=20, offset=40)
+        fourth = self.catalog.search_products(limit=20, offset=60)
+        ids = [p["product_id"] for page in [first, second, third, fourth] for p in page["products"]]
+        self.assertEqual(len(ids), first["total_matches"])
+        self.assertEqual(len(set(ids)), len(ids))
+
     def test_budget_search_returns_available_guitars_in_price_order(self):
         result = self.catalog.search_products(category="violoes", max_price="1000", limit=20)
         products = result["products"]

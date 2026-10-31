@@ -5,6 +5,14 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "list_categories",
+            "description": "Discover which instrument categories actually have available stock. Use when customers ask what the store sells or need help getting started.",
+            "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "search_products",
             "description": (
                 "Look up current prices, stock, and promotions. Use short product name terms, "
