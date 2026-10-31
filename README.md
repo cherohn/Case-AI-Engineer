@@ -19,7 +19,18 @@ Set `GROQ_API_KEY` in `.env` to your own Groq key. Keep that file local.
 The default model is `openai/gpt-oss-120b`; change `GROQ_MODEL` to use another
 compatible model. The API key never belongs in the browser or repository.
 
-Start the terminal chat:
+Start the web application:
+
+```bash
+python -m store_agent.web
+```
+
+Open http://127.0.0.1:8000. The page and API run on the same server. Suggested
+questions fill the input without sending a request; press Enter or click Send
+to submit. Shift+Enter inserts a newline. New conversation clears the server
+session. Reloading the page also starts a fresh conversation.
+
+The terminal chat is available too:
 
 ```bash
 python -m store_agent
@@ -46,6 +57,22 @@ its result back to Groq. The model then writes the customer-facing answer.
 - `store_agent/prompt.txt` defines the attendant's tone, scope, and response rules.
 - `store_agent/agent.py` runs the conversation and tool loop.
 - `store_agent/__main__.py` handles terminal input and API errors.
+- `store_agent/web.py` exposes the FastAPI endpoints and serves the frontend.
+- `static/` contains the HTML, CSS, and browser JavaScript.
+
+The frontend uses plain JavaScript because this interface has one screen and
+does not need a separate build system. It sends messages to `POST /api/chat`;
+the server returns the answer and a random session ID. Each session has its own
+agent history. `DELETE /api/sessions/{id}` clears it. `GET /api/health` checks
+whether credentials are configured, without making a model request. Endpoint
+schemas are available at `/docs` while the server is running.
+
+The server keeps at most 20 sessions and accepts one chat request at a time to
+avoid accidental concurrent usage. Sessions are in memory and disappear on
+restart. Oldest sessions are discarded when the cap is reached. This is a local
+demo bound to loopback, with no authentication; it needs access controls and
+per-user quotas before public deployment. Customer input and model output are
+rendered with text nodes, not interpreted as HTML.
 
 I chose direct function calling rather than an agent framework because this case
 needs only three tools and a short loop. Keeping that loop visible makes failures
@@ -117,9 +144,12 @@ integration. Editing a file changes the next lookup's result.
 python -m unittest discover -v
 ```
 
-Tests run offline. They cover catalog rules, changes to source stock, policy
+The 27 tests run offline. They cover catalog rules, changes to source stock, policy
 sections spanning pages, tool execution, invalid arguments, bounded history,
-and request limits. Mock responses test orchestration, not model quality.
+request limits, session isolation, and API errors. Mock responses test
+orchestration, not model quality. A Chromium check also exercised desktop and
+mobile layouts, suggested prompts, send/reset actions, rate-limit recovery,
+and safe rendering with simulated API responses.
 
 A live Portuguese conversation queried the Takamine GD20 and the online return
 policy. It made three requests and reported 4,052 tokens, returning R$2,089.05 for
@@ -128,9 +158,8 @@ and 3,951 tokens. No other API requests were needed for these checks.
 
 ## Limitations and next steps
 
-The browser interface and three to five recorded example conversations still need
-to be added before submission. The final README and documentation will also be
-exported to PDF.
+Three to five recorded example conversations still need to be added before
+submission. The final README and documentation will also be exported to PDF.
 
 The agent cannot place orders, check private order status, issue refunds, register
 complaints, or contact staff. It must not claim those actions were completed.

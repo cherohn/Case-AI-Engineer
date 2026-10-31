@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#263c32">
+  <title>Empório da Música · Customer support</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/chat.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Empório da Música home">
+        <span class="brand-mark" aria-hidden="true">♪</span>
+        <span>EMPÓRIO<br>DA MÚSICA<span class="brand-caption">YOUR MUSIC STARTS HERE</span></span>
+      </a>
+      <div class="sidebar-copy">
+        <span class="eyebrow">LET'S FIND YOUR SOUND</span>
+        <h1>A little guidance.<br>A lot of music.</h1>
+        <p>Explore instruments, compare options, and get help with the details.</p>
+      </div>
+      <div class="strings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="sidebar-footer">Instruments. Advice. Possibilities.<br><span>Campo Grande · MS</span></div>
+    </aside>
+
+    <main>
+      <header class="chat-header">
+        <div><span class="eyebrow">CUSTOMER SUPPORT</span><h2>Let's talk music.</h2></div>
+        <button id="reset" class="reset" type="button">New conversation <span aria-hidden="true">↗</span></button>
+      </header>
+
+      <div id="conversation" class="conversation" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions">
+        <div id="welcome" class="welcome">
+          <div class="welcome-note" aria-hidden="true">♪</div>
+          <h3>What brings you in?</h3>
+          <p>Looking for your first instrument, your next one,<br>or a hand with our store policies? Ask away.</p>
+          <div class="suggestions" aria-label="Suggested questions">
+            <button type="button" data-question="What acoustic guitars are available for up to R$1,000?">Find an instrument <span>Acoustic guitars under R$1,000 ↗</span></button>
+            <button type="button" data-question="What payment methods do you accept?">Plan your purchase <span>Payment options ↗</span></button>
+            <button type="button" data-question="Can I return an instrument bought online?">A question after buying? <span>Returns and exchanges ↗</span></button>
+          </div>
+        </div>
+        <div id="messages"></div>
+      </div>
+
+      <div class="composer-area">
+        <p id="status" class="status" role="status"></p>
+        <form id="chat-form" class="composer">
+          <label class="sr-only" for="message">Your message</label>
+          <textarea id="message" rows="1" maxlength="1000" placeholder="Ask us about an instrument or the store…" required></textarea>
+          <button id="send" type="submit" aria-label="Send message"><span aria-hidden="true">↑</span></button>
+        </form>
+        <div class="composer-footer"><span>Virtual assistant · Please confirm important details with our team.</span><span id="count">0 / 1000</span></div>
+        <p class="demo-note">Demo only. Purchases, refunds, and order changes require human assistance.</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
