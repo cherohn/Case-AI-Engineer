@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
-from groq import AuthenticationError, RateLimitError
+from groq import AuthenticationError, BadRequestError, RateLimitError
 import httpx
 
 from store_agent.web import create_app
@@ -14,7 +14,9 @@ class WebTest(unittest.TestCase):
         self.agent_patch = patch("store_agent.web.Agent")
         self.agent_class = self.agent_patch.start()
         self.addCleanup(self.agent_patch.stop)
-        self.agent_class.side_effect = lambda *args, **kwargs: Mock(reply=Mock(return_value="Here is the answer."))
+        self.agent_class.side_effect = lambda *args, **kwargs: Mock(
+            reply=Mock(return_value="Here is the answer."), requests=2, tokens=100, calls=[],
+        )
         self.client = TestClient(create_app(client=Mock()))
         self.addCleanup(self.client.close)
 
@@ -89,3 +91,22 @@ class WebTest(unittest.TestCase):
         response = self.client.post("/api/chat", json={"message": "Hello"})
         self.assertEqual(response.status_code, 503)
         self.assertNotIn("sensitive provider details", response.text)
+
+    def test_provider_failure_logs_status_without_message_or_body(self):
+        agent = Mock(requests=1, tokens=0)
+        agent.reply.side_effect = BadRequestError(
+            "sensitive provider details",
+            response=httpx.Response(400, request=httpx.Request("POST", "https://api.groq.com")),
+            body={"failed_generation": "private conversation content"},
+        )
+        self.agent_class.side_effect = None
+        self.agent_class.return_value = agent
+        with self.assertLogs("uvicorn.error", level="WARNING") as logs:
+            response = self.client.post("/api/chat", json={"message": "Hello"})
+        self.assertEqual(response.status_code, 502)
+        output = " ".join(logs.output)
+        self.assertIn("type=BadRequestError status=400 requests=1", output)
+        for private_text in ["sensitive provider details", "private conversation content"]:
+            self.assertNotIn(private_text, output)
+            self.assertNotIn(private_text, response.text)
+        agent.reply.assert_called_once()

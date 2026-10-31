@@ -100,7 +100,12 @@ def create_app(client=None):
             raise HTTPException(429, "The assistant reached its usage limit. Please try again later.", headers=headers) from None
         except AuthenticationError:
             raise HTTPException(503, "The assistant's API credentials need to be checked on the server.") from None
-        except APIError:
+        except APIError as error:
+            logging.getLogger("uvicorn.error").warning(
+                "Groq request failed: type=%s status=%s requests=%s reported_tokens=%s",
+                type(error).__name__, getattr(error, "status_code", None),
+                agent.requests, agent.tokens,
+            )
             raise HTTPException(502, "The assistant is temporarily unavailable. Please try again later.") from None
         except (ValueError, RuntimeError):
             raise HTTPException(502, "The assistant could not complete this answer. Try a more specific question.") from None

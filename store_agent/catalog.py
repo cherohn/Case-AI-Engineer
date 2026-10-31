@@ -5,6 +5,17 @@ import unicodedata
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+CATEGORY_NAMES = {
+    "Guitarras": "Electric guitars",
+    "Baixos": "Basses",
+    "Baterias e Percussão": "Drums and percussion",
+    "Teclados e Pianos": "Keyboards and pianos",
+    "Violões": "Acoustic guitars",
+    "Instrumentos de Sopro (Madeiras)": "Woodwinds",
+    "Instrumentos de Sopro (Metais)": "Brass instruments",
+    "Cordas Orquestrais": "Orchestral strings",
+    "Ukuleles": "Ukuleles",
+}
 
 
 def normalize(text: str) -> str:
@@ -48,7 +59,7 @@ class Catalog:
             products.append({
                 "product_id": row["product_id"],
                 "name": row["name"],
-                "category": categories[row["category_id"]],
+                "category": CATEGORY_NAMES[categories[row["category_id"]]],
                 "description": row["description"],
                 "status": row["status"],
                 "stock_quantity": stock,
@@ -96,11 +107,15 @@ class Catalog:
             raise ValueError("max_price must be a finite, non-negative number")
 
         terms = normalize(query).split()
+        category_terms = {normalize(category)}
+        for original, english in CATEGORY_NAMES.items():
+            if category and normalize(category) in normalize(original):
+                category_terms.add(normalize(english))
         matches = []
         for product in self._products():
             if available_only and not product["available"]:
                 continue
-            if category and normalize(category) not in normalize(product["category"]):
+            if category and not any(term in normalize(product["category"]) for term in category_terms):
                 continue
             if not all(term in normalize(product["name"]) for term in terms):
                 continue

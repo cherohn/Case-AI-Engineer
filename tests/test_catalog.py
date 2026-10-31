@@ -15,8 +15,8 @@ class CatalogTest(unittest.TestCase):
     def test_discovery_lists_only_categories_with_available_products(self):
         categories = self.catalog.list_categories()["categories"]
         self.assertEqual(sum(c["available_products"] for c in categories), 61)
-        self.assertIn("Violões", [c["name"] for c in categories])
-        self.assertNotIn("Instrumentos de Sopro (Madeiras)", [c["name"] for c in categories])
+        self.assertIn("Acoustic guitars", [c["name"] for c in categories])
+        self.assertNotIn("Woodwinds", [c["name"] for c in categories])
 
     def test_catalog_pages_have_no_duplicates_and_cover_every_available_product(self):
         first = self.catalog.search_products(limit=20)
@@ -31,7 +31,7 @@ class CatalogTest(unittest.TestCase):
         result = self.catalog.search_products(category="violoes", max_price="1000", limit=20)
         products = result["products"]
         self.assertGreater(len(products), 0)
-        self.assertTrue(all(p["category"] == "Violões" and p["available"] for p in products))
+        self.assertTrue(all(p["category"] == "Acoustic guitars" and p["available"] for p in products))
         prices = [Decimal(p["price_brl"]) for p in products]
         self.assertEqual(prices, sorted(prices))
         self.assertTrue(all(price <= 1000 for price in prices))
@@ -40,6 +40,12 @@ class CatalogTest(unittest.TestCase):
         product = self.catalog.search_products(query="Takamine GD20")["products"][0]
         self.assertEqual(product["price_brl"], "2199.00")
         self.assertEqual(product["pix_price_brl"], "2089.05")
+
+    def test_english_filters_and_original_category_aliases_return_the_same_products(self):
+        english = self.catalog.search_products(category="Acoustic guitars", max_price="1000")
+        original = self.catalog.search_products(category="violoes", max_price="1000")
+        self.assertEqual(english["products"], original["products"])
+        self.assertGreater(english["total_matches"], 0)
 
     def test_status_and_stock_both_control_availability(self):
         for product_id in ["96", "113", "130", "136"]:
