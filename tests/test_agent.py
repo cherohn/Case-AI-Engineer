@@ -42,6 +42,24 @@ class AgentTest(unittest.TestCase):
         self.assertEqual(self.agent.requests, 2)
         self.assertEqual(self.agent.tokens, 200)
 
+    def test_incomplete_return_asks_for_facts_without_another_model_request(self):
+        self.create.return_value = completion(tool="check_return", arguments={})
+        answer = self.agent.reply("I changed my mind about my purchase. Can I return it?")
+        self.assertIn("online or in store", answer)
+        self.assertIn("days ago did you receive", answer)
+        self.assertNotIn("7", answer)
+        self.create.assert_called_once()
+        self.assertEqual(self.agent.history[-1]["content"], answer)
+
+    def test_unknown_return_facts_can_be_explicitly_null(self):
+        self.create.return_value = completion(
+            tool="check_return", arguments={"purchase_channel": None, "days_since_receipt": None},
+        )
+        answer = self.agent.reply("Can I return my purchase?")
+        self.assertIn("online or in store", answer)
+        self.assertIn("days ago did you receive", answer)
+        self.create.assert_called_once()
+
     def test_repeated_tool_calls_stop_at_the_budget(self):
         self.create.return_value = completion(tool="read_policy", arguments={"topic": "returns"})
         with self.assertRaisesRegex(RuntimeError, "budget"):

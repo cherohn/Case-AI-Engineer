@@ -54,3 +54,25 @@ class Policies:
                 "available_actions": [],
             }
         return result
+
+    def check_return(self, purchase_channel=None, days_since_receipt=None) -> dict:
+        if purchase_channel is not None and purchase_channel not in {"online", "in_store"}:
+            raise ValueError("purchase_channel must be online or in_store")
+        if days_since_receipt is not None and days_since_receipt < 0:
+            raise ValueError("days_since_receipt must be non-negative")
+        questions = []
+        if purchase_channel is None:
+            questions.append("Was the purchase made online or in store?")
+        if days_since_receipt is None:
+            questions.append("How many calendar days ago did you receive the instrument?")
+        if questions:
+            return {
+                "needs_information": True,
+                "question": "I can help check that. " + " ".join(questions),
+            }
+        result = self.read_policy("returns")
+        result["customer_facts"] = {
+            "purchase_channel": purchase_channel,
+            "days_since_receipt": days_since_receipt,
+        }
+        return result

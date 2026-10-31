@@ -17,8 +17,8 @@ TOOLS = [
             "description": (
                 "Look up current prices, stock, and promotions. Use short product name terms, "
                 "not a full sentence. For a specific model, omit category. Category names: "
-                "Violões (acoustic guitars), Guitarras (electric guitars), Baixos, Ukuleles, "
-                "Baterias, Teclados. Empty query lists products by category. "
+                "Acoustic guitars, Electric guitars, Basses, Ukuleles, "
+                "Drums and percussion, Keyboards and pianos. Empty query lists products by category. "
                 "Set available_only=false to find unavailable or discontinued models."
             ),
             "parameters": {
@@ -50,8 +50,23 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "check_return",
+            "description": "Use first when a customer wants to return their own purchase or has changed their mind. Pass only explicitly supplied facts; omit unknown fields or pass null. Never infer receipt time from purchase time. Missing facts produce a clarification question before eligibility can be discussed.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "purchase_channel": {"type": ["string", "null"], "enum": ["online", "in_store", None]},
+                    "days_since_receipt": {"type": ["integer", "null"], "minimum": 0},
+                },
+                "additionalProperties": False,
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "read_policy",
-            "description": "Read a section of the store manual before answering policy or general store questions.",
+            "description": "Read the store manual for general policies and store information. For a customer asking to return their own purchase, use check_return first.",
             "parameters": {
                 "type": "object",
                 "properties": {"topic": {"type": "string", "enum": list(SECTIONS)}},

@@ -25,6 +25,7 @@ class Agent:
             "search_products": catalog.search_products,
             "get_product": catalog.get_product,
             "read_policy": policies.read_policy,
+            "check_return": policies.check_return,
         }
 
     def _run_tool(self, name, arguments):
@@ -36,16 +37,25 @@ class Agent:
             schema = definition["parameters"]
             if not isinstance(args, dict) or args.keys() - schema["properties"].keys():
                 raise ValueError("Unexpected tool arguments.")
-            types = {"string": str, "integer": int, "boolean": bool}
+            types = {"string": str, "integer": int, "boolean": bool, "null": type(None)}
             for key, value in args.items():
                 field = schema["properties"][key]
-                if type(value) is not types[field["type"]]:
+                names = field["type"] if isinstance(field["type"], list) else [field["type"]]
+                if type(value) not in [types[name] for name in names]:
                     raise ValueError("Invalid argument type: " + key)
             if name == "search_products" and not 1 <= args.get("limit", 5) <= 5:
                 raise ValueError("Return between 1 and 5 products.")
             return self.tools[name](**args)
         except (ValueError, TypeError, InvalidOperation) as error:
             return {"error": str(error), "instruction": "Correct the arguments or ask the customer to clarify."}
+
+    def _remember(self, text, answer):
+        self.history.extend([
+            {"role": "user", "content": text},
+            {"role": "assistant", "content": answer[:2000]},
+        ])
+        self.history = self.history[-4:]
+        return answer
 
     def reply(self, text):
         if not text.strip() or len(text) > 1000:
@@ -80,12 +90,7 @@ class Agent:
                 answer = message.content
                 if not answer:
                     raise RuntimeError("The model returned an empty answer.")
-                self.history.extend([
-                    {"role": "user", "content": text},
-                    {"role": "assistant", "content": answer[:2000]},
-                ])
-                self.history = self.history[-4:]
-                return answer
+                return self._remember(text, answer)
 
             if step == 2:
                 break
@@ -93,6 +98,8 @@ class Agent:
             for call in message.tool_calls:
                 result = self._run_tool(call.function.name, call.function.arguments)
                 self.calls.append({"tool": call.function.name, "arguments": call.function.arguments})
+                if call.function.name == "check_return" and result.get("needs_information"):
+                    return self._remember(text, result["question"])
                 messages.append({
                     "role": "tool",
                     "tool_call_id": call.id,

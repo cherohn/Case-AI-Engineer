@@ -29,3 +29,15 @@ class PoliciesTest(unittest.TestCase):
     def test_unknown_section_fails_instead_of_returning_unrelated_text(self):
         with self.assertRaises(ValueError):
             self.policies.read_policy("invented")
+
+    def test_return_question_only_requests_missing_facts(self):
+        result = self.policies.check_return(purchase_channel="online")
+        self.assertIn("days ago did you receive", result["question"])
+        self.assertNotIn("online or in store", result["question"])
+        self.assertNotIn("text", result)
+
+    def test_supplied_purchase_facts_unlock_the_policy_without_approving_a_return(self):
+        result = self.policies.check_return(purchase_channel="online", days_since_receipt=3)
+        self.assertEqual(result["section"], "4. Política de Trocas e Devoluções")
+        self.assertEqual(result["customer_facts"]["days_since_receipt"], 3)
+        self.assertEqual(result["service_boundary"]["available_actions"], [])
