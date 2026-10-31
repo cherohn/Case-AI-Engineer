@@ -7,8 +7,43 @@ CSV files and policy manual.
 ## Project status
 
 Catalog lookups and pricing rules are implemented. The conversational agent and
-policy retrieval are not implemented yet. Model configuration and interaction
-examples will be added in the next steps.
+policy retrieval are not implemented yet. A Groq configuration template is
+available; API integration and interaction examples will follow.
+
+## Model and provider
+
+The selected provider is **Groq**, with `openai/gpt-oss-120b` as the default model.
+It supports local function calling, which lets Python execute catalog lookups
+and return facts for the model to explain. The 120B model is the initial choice
+for questions that combine customer intent, product data, and policy rules. This
+choice still needs validation against actual conversations; it is not a claim
+that the model outperforms every alternative on this task.
+
+The account's reported free-tier limits are 30 requests/minute, 1,000
+requests/day, 8,000 tokens/minute, and 200,000 tokens/day. The 20B alternative has
+the same reported quotas, so selecting it would not increase those quotas. Limits
+can change and are shared at the Groq organization level. Retrieved policy
+context, tool output, and conversation history need to stay small enough for
+this budget. One customer turn can require multiple API requests when tools are
+used.
+
+References: [model capabilities](https://console.groq.com/docs/model/openai/gpt-oss-120b),
+[local tool calling](https://console.groq.com/docs/tool-use/local-tool-calling),
+and [rate limits](https://console.groq.com/docs/rate-limits).
+
+Prepare the local configuration:
+
+```bash
+cp .env.example .env
+```
+
+Set `GROQ_API_KEY` in `.env` locally. `GROQ_MODEL` can be changed without editing
+the source code once the API client is implemented. The `.env` file is ignored
+by Git; `.env.example` contains no credentials. Never paste API keys into the
+README, examples, or issue reports.
+
+The API client is not implemented yet, so this configuration alone does not
+start the conversational agent.
 
 ## Run the current checks
 
