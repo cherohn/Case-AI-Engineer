@@ -9,6 +9,8 @@ from the supplied PDF before answering.
 Use Python 3.11 or newer. Development checks have run on Python 3.14.
 
 ```bash
+git clone https://github.com/cherohn/Case-AI-Engineer.git
+cd Case-AI-Engineer
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
@@ -29,6 +31,15 @@ Open http://127.0.0.1:8000. The page and API run on the same server. Suggested
 questions fill the input without sending a request; press Enter or click Send
 to submit. Shift+Enter inserts a newline. New conversation clears the server
 session. Reloading the page also starts a fresh conversation.
+
+If port 8000 is already in use, choose another local port:
+
+```bash
+python -m uvicorn store_agent.web:app --host 127.0.0.1 --port 8001
+```
+
+Without a key, the page and catalog still work, but chat reports that the assistant
+is not configured. Configuring a key is required for actual model responses.
 
 You do not need to know a model name to get started. **Browse instruments** opens
 the available catalog with category, name, and budget filters. Each item shows

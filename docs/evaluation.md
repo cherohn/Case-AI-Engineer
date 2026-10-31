@@ -71,6 +71,19 @@ were preserved to avoid spending quota on repeated checks.
 
 ## Local checks and limits of the evidence
 
+A clean installation was verified on October 31, 2026 using the tracked files at
+commit `0ff9778` and Python 3.14.3. The existing virtual environment and `.env`
+were excluded. A new virtual environment was created without system packages,
+and dependencies were downloaded from `requirements.txt` with pip's cache disabled.
+`pip check` found no broken requirements and all 31 tests passed.
+
+The clean copy also started an HTTP server on a separate loopback port. The page,
+static assets, theme script, API documentation, and filtered catalog loaded
+successfully. Without credentials, the CLI reported a missing key and the chat
+endpoint returned HTTP 503, while browsing remained available. No Groq calls were
+made. This check establishes installation and startup on Python 3.14.3; other
+Python versions were not exercised in this run.
+
 The 31 offline tests cover money and stock rules, inactive promotions, policy
 sections across pages, tool argument validation, the request budget, session
 isolation, catalog filtering, and pagination. They use mock model responses and
