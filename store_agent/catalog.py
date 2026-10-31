@@ -1,5 +1,3 @@
-"""Read catalog facts and calculate prices independently of the language model."""
-
 import csv
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
@@ -26,8 +24,7 @@ class Catalog:
         with (self.data_dir / filename).open(encoding="utf-8-sig", newline="") as file:
             return list(csv.DictReader(file))
 
-    def _products(self) -> list[dict]:
-        categories = {row["category_id"]: row["name"] for row in self._read("categories.csv")}
+    def _discounts(self) -> dict[str, Decimal]:
         discounts = {}
         for row in self._read("promotions.csv"):
             if row["is_active"] == "1":
@@ -37,7 +34,11 @@ class Catalog:
                     discounts.get(product_id, Decimal("0")),
                     Decimal(row["discount_percent"]),
                 )
+        return discounts
 
+    def _products(self) -> list[dict]:
+        categories = {row["category_id"]: row["name"] for row in self._read("categories.csv")}
+        discounts = self._discounts()
         products = []
         for row in self._read("products.csv"):
             original_price = Decimal(row["price_brl"])
