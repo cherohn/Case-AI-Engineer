@@ -138,8 +138,8 @@ snapshot, and the PDF parser depends on this manual's structure.
 
 ## Submission contents
 
-The written PDF will use the ordered sources in [submission.json](submission.json):
+The [submission PDF](../submission/Matheus%20Souza%20Garcez%20-%20AI%20Engineer%20%E2%80%93%20Full-Stack%20para%20Aplica%C3%A7%C3%B5es%20com%20IA%20Generativa.pdf) uses the ordered sources in [submission.json](submission.json):
 README, this report, and the five selected conversations. The public repository
 also retains source data, tests, captures, incremental commits, and detailed
-development notes. Generate and review the PDF next, then freeze the repository
-when the submission is sent.
+development notes. The PDF export uses selectable text, document links, and embedded
+captures. Freeze the repository when the submission is sent.

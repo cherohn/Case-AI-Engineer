@@ -1,0 +1,76 @@
+@page {
+  size: A4;
+  margin: 19mm 17mm 18mm;
+  @top-left {
+    content: "Empório da Música";
+    font: 8pt "Noto Sans", sans-serif;
+    color: #59665f;
+  }
+  @top-right {
+    content: "AI Engineer technical case";
+    font: 8pt "Noto Sans", sans-serif;
+    color: #59665f;
+  }
+  @bottom-left {
+    content: "Matheus Souza Garcez";
+    font: 8pt "Noto Sans", sans-serif;
+    color: #59665f;
+  }
+  @bottom-right {
+    content: counter(page) " / " counter(pages);
+    font: 8pt "Noto Sans", sans-serif;
+    color: #59665f;
+  }
+}
+@page cover {
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+html { font-family: "Noto Sans", sans-serif; color: #22352b; font-size: 10pt; }
+body { margin: 0; line-height: 1.38; }
+h1 { font-size: 22pt; line-height: 1.2; margin: 0 0 7mm; bookmark-level: 1; }
+h2 { font-size: 13pt; margin: 4.5mm 0 2.5mm; line-height: 1.3; bookmark-level: 2; }
+h3 { font-size: 10.5pt; margin: 5mm 0 2mm; bookmark-level: 3; }
+h1, h2, h3 { break-after: avoid; }
+p { margin: 0 0 2.5mm; orphans: 3; widows: 3; }
+a { color: #255c40; text-decoration: underline; overflow-wrap: anywhere; }
+strong { font-weight: 650; }
+ul, ol { padding-left: 5mm; margin: 2mm 0 4mm; }
+li { margin-bottom: 1.5mm; }
+li p { margin-bottom: 1mm; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.4pt; overflow-wrap: anywhere; }
+pre { background: #f2f5f1; border: 0.3mm solid #d2dbd1; border-radius: 1.5mm; padding: 2.5mm; white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; font-size: 8.4pt; line-height: 1.4; }
+pre code { white-space: pre-wrap; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0 5mm; font-size: 8.8pt; line-height: 1.4; table-layout: fixed; }
+thead { display: table-header-group; }
+th { background: #e9efe7; text-align: left; font-weight: 650; }
+th, td { border: 0.25mm solid #cbd5c9; padding: 2mm; vertical-align: top; overflow-wrap: anywhere; }
+th:first-child { width: 32%; }
+table:has(th:nth-child(3)) th:first-child { width: 22%; }
+table:has(th:nth-child(3)) th:nth-child(2) { width: 55%; }
+tr { break-inside: avoid; }
+table code { font-size: 7.8pt; }
+img { display: block; max-width: 100%; max-height: 108mm; height: auto; margin: 4mm auto; break-inside: avoid; }
+p:has(> img) { break-inside: avoid; }
+.document { break-before: page; }
+.example h2, .example h3 { bookmark-level: none; }
+.example h2 { margin-top: 5mm; }
+.example p, .example li { orphans: 2; widows: 2; }
+.cover { page: cover; break-after: page; padding-top: 25mm; }
+.cover h1 { font-size: 31pt; line-height: 1.18; max-width: 165mm; margin-top: 13mm; bookmark-level: none; }
+.eyebrow { color: #52644e; font-size: 9pt; letter-spacing: 1.8pt; }
+.subtitle { font-size: 14pt; color: #59665f; max-width: 145mm; margin-top: 8mm; }
+.cover-details { border-top: 0.6mm solid #315a3c; margin-top: 25mm; padding-top: 8mm; }
+.cover-details p { margin-bottom: 3mm; }
+.cover-details strong { font-size: 14pt; }
+.repository { margin-top: 16mm; font-size: 10pt; }
+.cover-note { color: #59665f; margin-top: 6mm; font-size: 9pt; }
+.contents { break-after: page; }
+.contents h1 { bookmark-level: none; }
+.contents ol { list-style: none; padding: 0; margin: 12mm 0; }
+.contents li { margin: 0 0 5mm; }
+.contents a { text-decoration: none; }
+.contents li a::after { content: leader(".") target-counter(attr(href), page); }
+.contents > p { font-size: 9pt; color: #59665f; }

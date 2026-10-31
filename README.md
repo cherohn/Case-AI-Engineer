@@ -267,7 +267,21 @@ from the model-generated policy explanation.
 
 ## Written submission
 
+[Download the submission PDF](submission/Matheus%20Souza%20Garcez%20-%20AI%20Engineer%20%E2%80%93%20Full-Stack%20para%20Aplica%C3%A7%C3%B5es%20com%20IA%20Generativa.pdf).
+
 The PDF source order and cover metadata are recorded in
 [docs/submission.json](docs/submission.json): this README, the validation report,
 and the five selected conversations. Detailed development notes remain available
 in the repository as supporting evidence.
+
+To rebuild the PDF, install the optional export dependencies in the virtual environment:
+
+```bash
+python -m pip install -r requirements-docs.txt
+python -m scripts.build_pdf
+```
+
+The exporter uses WeasyPrint with system text-rendering libraries and fonts; this
+export was validated on Linux. These optional dependencies are separate from the
+application requirements. The build imports only documentation tools and makes
+no Groq requests.
