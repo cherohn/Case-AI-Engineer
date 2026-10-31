@@ -75,6 +75,49 @@ No application layout change was needed for this finding.
 
 ![Visible input with an unsent follow-up during the layout replay](images/chat-input-visible.png)
 
+## Extended behavior checks
+
+Additional checks used the real browser and Groq on October 31, 2026. A native
+viewport kept the input visible. The first two questions shared a conversation;
+promotion and return checks started separate conversations. Automatic submissions
+paused for 60 seconds between the initial cases.
+
+| Check | Observed result | Reported requests / tokens |
+| --- | --- | --- |
+| Instrument discovery | Queried `list_categories`; six categories and counts matched the 61 available products. | 2 / 2,870 |
+| Budget follow-up | First submission returned HTTP 502. The candidate manually resent the restored message. The successful answer listed three available acoustic guitars at R$429.90, R$459.90, and R$549.00. | 2 / 3,501 for the successful turn |
+| Promotion with PIX | Queried `search_products`; Crafter HT-100 was R$2,399.00 before the 18% promotion and R$1,967.18 afterward, including PIX. No additional 5% was applied. | 2 / 3,048 |
+| Incomplete return, initial version | Failed the behavioral check: explained a conditional policy without asking purchase channel or receipt time, and invented a refund-clock starting event. | 2 / 3,310 |
+| Incomplete return, corrected version | `check_return` requested the missing facts. Python returned the clarification directly without an eligibility decision or policy deadline. | 1 / 1,520 |
+| Return after clarification | Continued the same conversation with online purchase, receipt three days earlier, and unused original packaging/accessories. The response cited section 4.1, store-paid shipping, the stated refund deadline, and staff confirmation of the procedure. No refund-clock starting event was added. | 2 / 3,800 |
+
+The successful budget answer was supplied by the candidate from the visible
+browser because automation had stopped on the first error. Its prices were checked
+against the CSVs; server completion metrics confirmed the successful request.
+That answer still included the Portuguese category alias in parentheses, prompting
+a change to normalize category labels in the backend for both model tools and UI.
+The files themselves remain unchanged and original category filters remain valid.
+
+The first follow-up failure predates error-status logging, so its upstream cause
+was not established. Later return-tool requests were rejected with HTTP 400. A
+single diagnostic request identified `tool_use_failed`: unknown facts were sent
+as null but the initial schema allowed only strings and integers. Nullable fields
+and local validation were corrected, regression-tested, and verified by the live
+clarification check. This is distinct from rate limiting. The application still
+does not automatically retry failed provider requests. See
+[Groq's tool-call validation documentation](https://console.groq.com/docs/tool-use/local-tool-calling).
+
+![Live promotion response](images/promotion-pix-live.png)
+
+![Missing return facts requested before eligibility](images/return-clarification.png)
+
+![Policy explanation after the customer supplied the missing facts](images/return-follow-up.png)
+
+These reported successful API responses account for 11 model requests and 18,049
+tokens, including the response that failed the initial semantic return check.
+Rejected provider requests did not return token usage and are excluded; this is
+not a full account-usage total. The earlier recorded examples were not regenerated.
+
 ## Failures found during development
 
 - A named acoustic-guitar search was incorrectly restricted to electric guitars.
@@ -114,9 +157,10 @@ endpoint returned HTTP 503, while browsing remained available. No Groq calls wer
 made. This check establishes installation and startup on Python 3.14.3; other
 Python versions were not exercised in this run.
 
-The 31 offline tests cover money and stock rules, inactive promotions, policy
+The 37 offline tests cover money and stock rules, inactive promotions, policy
 sections across pages, tool argument validation, the request budget, session
-isolation, catalog filtering, and pagination. They use mock model responses and
+isolation, catalog filtering, pagination, nullable return facts, deterministic
+clarification, and error-log privacy. They use mock model responses and
 do not demonstrate language-model quality.
 
 Chromium checks cover desktop/mobile layouts, catalog filtering and pagination,
@@ -136,9 +180,10 @@ prompt variations still need broader testing. The generator can still produce
 unsupported language, so the application is a prototype and performs no purchases,
 refunds, or customer-record changes.
 
-The five final examples report 10 API requests and 15,204 tokens. Including earlier
-development probes, failed responses, and the live frontend verification, the recorded development runs total
-28 requests and 41,147 tokens. These are response-reported counts, not an estimate
+The five selected examples report 10 API requests and 15,204 tokens. Before the
+extended behavior checks, recorded development probes and the live frontend
+verification accounted for 28 model requests and 41,147 reported tokens.
+These are response-reported counts, not an estimate
 of the organization's remaining quota; unrelated account usage is not measured.
 
 ## Delivery review

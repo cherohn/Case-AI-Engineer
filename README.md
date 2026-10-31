@@ -47,8 +47,9 @@ its current price, PIX price, and any active promotion. **Ask about this instrum
 fills a question in the chat; it does not send it automatically. Browsing makes
 no model requests. The assistant can also introduce the categories with stock
 and help narrow the choice through conversation.
-Category labels are displayed in English; filter values retain the original CSV
-names so queries use the supplied data without modifying it.
+Category names are normalized to English when the backend reads the catalog, so
+the browser and model tools receive the same labels. Filters also accept the
+original Portuguese category names. The supplied CSV files remain unchanged.
 
 The header's Theme selector offers System, Light, and Dark. System follows the
 operating system's preference, including changes while the page is open. Explicit
@@ -75,9 +76,15 @@ answer, without logging customer messages, answers, tool arguments, or credentia
 
 ## How it works
 
-The model chooses between four Python functions: `list_categories`,
-`search_products`, `get_product`, and `read_policy`. Python executes the chosen function and sends
-its result back to Groq. The model then writes the customer-facing answer.
+The model chooses between five Python functions: `list_categories`,
+`search_products`, `get_product`, `read_policy`, and `check_return`. Python executes
+the chosen function and usually sends its result back to Groq for an answer.
+For a personal return request with missing purchase channel or receipt time,
+`check_return` instead supplies a clarification question that the application
+displays directly. That path needs no second model request and prevents a generic
+policy answer from replacing the necessary questions. Once those facts are given,
+the tool returns the policy and customer facts for the model to explain; it does
+not approve or initiate a return operation.
 
 - `store_agent/catalog.py` handles product lookup, stock, and pricing.
 - `store_agent/policies.py` extracts the manual into its ten numbered sections.
@@ -108,7 +115,7 @@ per-user quotas before public deployment. Customer input and model output are
 rendered with text nodes, not interpreted as HTML.
 
 I chose direct function calling rather than an agent framework because this case
-needs only four tools and a short loop. Keeping that loop visible makes failures
+needs only five tools and a short loop. Keeping that loop visible makes failures
 easier to inspect. Policy retrieval is section-based: the model selects a topic,
 and Python returns that section with its source. For an eight-page manual with
 clear headings, embeddings and a vector database would add setup without a clear
@@ -179,7 +186,7 @@ integration. Editing a file changes the next lookup's result.
 python -m unittest discover -v
 ```
 
-The 31 tests run offline. They cover catalog rules, changes to source stock, policy
+The 37 tests run offline. They cover catalog rules, changes to source stock, policy
 sections spanning pages, tool execution, invalid arguments, bounded history,
 request limits, session isolation, and API errors. Mock responses test
 orchestration, not model quality. A Chromium check also exercised desktop and
@@ -205,7 +212,7 @@ python -m scripts.record_examples --case 1
 ```
 
 The script waits 60 seconds between cases and stops on API errors without retries.
-Generated text is recorded as returned, not rewritten to make it look correct.
+Application responses are recorded as returned, without editorial rewriting.
 The final README and documentation still need to be exported to PDF.
 
 The agent cannot place orders, check private order status, issue refunds, register

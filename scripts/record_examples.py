@@ -1,4 +1,4 @@
-"""Record real model responses. Running all cases intentionally waits between them."""
+"""Record live agent runs. Running all cases intentionally waits between them."""
 
 import argparse
 from datetime import datetime, timezone
@@ -48,7 +48,7 @@ def main():
             trace = json.dumps(agent.calls, ensure_ascii=False, indent=2)
             text = (
                 f"# {name[3:].replace('-', ' ').title()}\n\n"
-                f"Recorded from a live Groq response on {stamp}. Model: `{model}`.\n\n"
+                f"Recorded from a live agent run using Groq on {stamp}. Model: `{model}`.\n\n"
                 f"## Customer\n\n{question}\n\n"
                 f"## Assistant\n\n{answer}\n\n"
                 f"## Execution\n\n{agent.requests} API requests; {agent.tokens} reported tokens. "
