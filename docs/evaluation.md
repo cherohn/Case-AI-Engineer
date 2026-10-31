@@ -64,6 +64,17 @@ latency benchmark.
 Server completion logs record model-request count, token count, and tool names.
 They do not log the API key, customer message, model answer, or tool arguments.
 
+The first visible-browser review exposed a test-window issue: the fixed 900-pixel
+page viewport and its browser frame exceeded the available desktop area. A full
+page capture included content that the viewer could not see on screen. The visual
+check was repeated with a native viewport in a smaller window, replaying the saved
+answer without another Groq call. The input stayed at y=557–597 within a 671-pixel
+viewport before submission, while waiting, and after the answer. It was enabled
+and focused again after completion. A follow-up was typed visibly but not sent.
+No application layout change was needed for this finding.
+
+![Visible input with an unsent follow-up during the layout replay](images/chat-input-visible.png)
+
 ## Failures found during development
 
 - A named acoustic-guitar search was incorrectly restricted to electric guitars.
