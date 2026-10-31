@@ -81,6 +81,12 @@ selecting an instrument, suggested questions, message submission, clearing a
 conversation, rate-limit recovery, and rendering hostile HTML as text. Chat API
 responses are simulated in these checks, so they spend no Groq quota.
 
+Theme checks also cover keyboard selection, operating-system preference changes,
+persistence after reload, mobile layout, and a browser that blocks local storage.
+The checked primary, muted, button, promotional, and error text pairs meet 4.5:1
+contrast in both palettes; focus rings and input borders meet 3:1 against their
+surface. These targeted checks are not a full accessibility audit.
+
 Five live examples provide concrete evidence for the selected scenarios, not an
 exhaustive evaluation. Multi-turn ambiguity, every policy conflict, and adversarial
 prompt variations still need broader testing. The generator can still produce

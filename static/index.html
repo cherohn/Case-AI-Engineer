@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#263c32">
   <title>Empório da Música · Customer support</title>
+  <script src="/static/theme.js"></script>
   <link rel="stylesheet" href="/static/style.css">
   <script src="/static/chat.js" defer></script>
 </head>
@@ -17,6 +18,13 @@
           <span>Empório da Música<small>Customer support · Virtual assistant</small></span>
         </a>
         <div class="header-actions">
+          <label class="theme-picker">Theme
+            <select id="theme" aria-label="Color theme">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
           <button id="browse" class="browse" type="button">Browse instruments</button>
           <button id="reset" class="reset" type="button">New conversation</button>
         </div>

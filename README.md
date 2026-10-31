@@ -37,6 +37,12 @@ fills a question in the chat; it does not send it automatically. Browsing makes
 no model requests. The assistant can also introduce the categories with stock
 and help narrow the choice through conversation.
 
+The header's Theme selector offers System, Light, and Dark. System follows the
+operating system's preference, including changes while the page is open. Explicit
+choices are saved in browser storage. If storage is unavailable, theme switching
+still works for the current page. Both palettes cover the chat and catalog, with
+visible keyboard focus and contrast checks for primary text and controls.
+
 The terminal chat is available too:
 
 ```bash
