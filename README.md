@@ -70,6 +70,8 @@ python -m store_agent --trace --message "How much is the Takamine GD20 with PIX?
 
 `--trace` prints tool names, arguments, request count, and reported token usage
 to stderr. It does not print credentials or internal model reasoning.
+The web server logs request count, token usage, and tool names after a completed
+answer, without logging customer messages, answers, tool arguments, or credentials.
 
 ## How it works
 

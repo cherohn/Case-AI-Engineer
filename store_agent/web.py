@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import logging
 import os
 from pathlib import Path
 from threading import Lock
@@ -86,6 +87,10 @@ def create_app(client=None):
                 sessions[session_id] = Agent(client, model=model)
             agent = sessions[session_id]
             answer = agent.reply(body.message)
+            logging.getLogger("uvicorn.error").info(
+                "Chat completed: requests=%s tokens=%s tools=%s",
+                agent.requests, agent.tokens, [call["tool"] for call in agent.calls],
+            )
             return {"answer": answer, "session_id": session_id}
         except RateLimitError as error:
             headers = {}

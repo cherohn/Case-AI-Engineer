@@ -45,6 +45,25 @@ renderer. It does not make a new model request. The two questions in this image
 come from separate recorded scenarios; it is a presentation check, not an
 additional multi-turn quality evaluation.
 
+## Live frontend verification
+
+On October 31, 2026 at 14:38 UTC, a visible Chromium window submitted the Takamine
+GD20 price question through the actual frontend. No chat response was intercepted
+or simulated. The request reached FastAPI, called Groq, executed `search_products`,
+and rendered the model's response in the chat.
+
+The browser submitted one HTTP request and received HTTP 200. The agent made two
+model requests and reported 2,944 tokens. The response was in English and showed
+the catalog's regular price of R$2,199.00 and PIX price of R$2,089.05. The send
+button became available again and no JavaScript errors were observed. The browser
+flow took approximately 2.1 seconds in this run; this is one measurement, not a
+latency benchmark.
+
+![Actual frontend response from the live Groq test](images/frontend-price-live.png)
+
+Server completion logs record model-request count, token count, and tool names.
+They do not log the API key, customer message, model answer, or tool arguments.
+
 ## Failures found during development
 
 - A named acoustic-guitar search was incorrectly restricted to electric guitars.
@@ -107,8 +126,8 @@ unsupported language, so the application is a prototype and performs no purchase
 refunds, or customer-record changes.
 
 The five final examples report 10 API requests and 15,204 tokens. Including earlier
-development probes and failed responses, the recorded development runs total
-26 requests and 38,203 tokens. These are response-reported counts, not an estimate
+development probes, failed responses, and the live frontend verification, the recorded development runs total
+28 requests and 41,147 tokens. These are response-reported counts, not an estimate
 of the organization's remaining quota; unrelated account usage is not measured.
 
 ## Delivery review
